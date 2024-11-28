@@ -1,3 +1,4 @@
+// user_mission.dto.js
 export const validateUserMissionDTO = (data) => {
     const { userId, missionId } = data;
 

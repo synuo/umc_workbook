@@ -1,3 +1,4 @@
+// user_mission.service.js
 import { insertUserMission, checkUserAndMissionExistence } from "../repositories/user_mission.repository.js";
 
 export const addUserMission = async (pool, userId, missionId) => {

@@ -1,23 +1,17 @@
-import { reviewUpload } from "../services/review.service.js";
-import { validateReviewDto } from "../dtos/review.dto.js";
-// POST /api/v1/reviews
-export const handleReviewUpload = async (req, res) => {
-  const pool = req.app.get("pool"); // pool 형태로 DB 연결
+import * as storeService from '../services/store.service.js';
+import { StatusCodes } from 'http-status-codes';
 
+// 가게 추가 핸들러
+export const handleStoreUpload = async (req, res, next) => {
   try {
-    const { userId, storeId, body, score } = req.body;
+    const { region_id } = req.params; // URL에서 region_id 가져오기
+    const storeData = { ...req.body, region_id }; // 요청 본문과 region_id 결합
 
-    // DTO 검증
-    const validationError = validateReviewDto(req.body);
-    if (validationError) {
-      return res.status(400).json({ message: validationError });
-    }
+    const addedStore = await storeService.addStoreService(storeData); // 서비스 호출
 
-    // 서비스 호출
-    await reviewUpload(pool, userId, storeId, body, score);
-    return res.status(201).json({ message: "Review added successfully!" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "An error occurred while adding the review." });
+    return res.status(StatusCodes.CREATED).json({ success: true, store: addedStore }); // 성공 응답
+  } catch (error) {
+    console.error("가게 추가 중 오류 발생:", error);
+    return res.status(StatusCodes.BAD_REQUEST).json({ success: false, error: error.message }); // 오류 응답
   }
 };
